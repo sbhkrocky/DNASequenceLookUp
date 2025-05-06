@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DNA Sequence Analyzer - ATG Counter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin: 10px 0;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9f7ef;
+            border-radius: 4px;
+            display: none;
+        }
+        .highlight {
+            background-color: yellow;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>DNA Sequence Analyzer</h1>
+        <p>Enter your DNA sequence below to count ATG codons:</p>
+        
+        <textarea id="dnaSequence" placeholder="Enter DNA sequence (e.g., ATGCGATGGCTAGATG...)"></textarea>
+        
+        <button onclick="countATG()">Count ATG Codons</button>
+        <button onclick="clearFields()">Clear</button>
+        
+        <div id="result">
+            <h3>Results:</h3>
+            <p>Number of ATG codons found: <span id="atgCount">0</span></p>
+            <p>Positions: <span id="atgPositions"></span></p>
+            <p>Highlighted sequence:</p>
+            <div id="highlightedSequence"></div>
+        </div>
+    </div>
+
+    <script>
+        function countATG() {
+            // Get the DNA sequence from the textarea
+            const dnaInput = document.getElementById('dnaSequence').value.trim().toUpperCase();
+            
+            // Validate the input
+            if (!dnaInput) {
+                alert("Please enter a DNA sequence");
+                return;
+            }
+            
+            // Check for invalid characters
+            const invalidChars = dnaInput.match(/[^ATGC]/g);
+            if (invalidChars) {
+                alert(`Invalid DNA characters found: ${invalidChars.join(', ')}\nPlease use only A, T, G, C.`);
+                return;
+            }
+            
+            // Count ATG occurrences
+            const atgRegex = /ATG/g;
+            let count = 0;
+            let positions = [];
+            let match;
+            
+            // Find all matches and their positions
+            while ((match = atgRegex.exec(dnaInput)) !== null) {
+                count++;
+                positions.push(match.index + 1); // +1 to make it 1-based index
+                // Reset regex lastIndex if we didn't manually advance it
+                if (match.index === atgRegex.lastIndex) {
+                    atgRegex.lastIndex++;
+                }
+            }
+            
+            // Display results
+            document.getElementById('atgCount').textContent = count;
+            document.getElementById('atgPositions').textContent = positions.length > 0 ? positions.join(', ') : 'None';
+            
+            // Create highlighted version of the sequence
+            const highlighted = dnaInput.replace(/ATG/g, '<span class="highlight">ATG</span>');
+            document.getElementById('highlightedSequence').innerHTML = highlighted;
+            
+            // Show results section
+            document.getElementById('result').style.display = 'block';
+        }
+        
+        function clearFields() {
+            document.getElementById('dnaSequence').value = '';
+            document.getElementById('result').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
